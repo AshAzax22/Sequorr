@@ -1,0 +1,680 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: var(--bg-base);
+  color: var(--fg-primary);
+  overflow: hidden;
+}
+
+.header {
+  height: 72px;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--bg-surface);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-8);
+  gap: var(--space-12);
+  z-index: 1000;
+}
+
+.logo {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.brand {
+  color: var(--fg-primary);
+}
+
+.findr {
+  color: var(--brand-primary);
+}
+
+.searchBar {
+  flex: 1;
+  max-width: 600px;
+  display: flex;
+  gap: var(--space-2);
+}
+
+@media (max-width: 768px) {
+  .header {
+    height: auto;
+    padding: var(--space-4);
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .searchBar {
+    max-width: none;
+    order: 2;
+  }
+  
+  .logo {
+    margin-bottom: var(--space-2);
+  }
+}
+
+.inputGroup {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.searchIcon {
+  position: absolute;
+  left: var(--space-4);
+  color: var(--fg-muted);
+}
+
+.inputGroup input {
+  width: 100%;
+  background-color: var(--bg-surface-active);
+  border: 1px solid var(--border-color);
+  color: var(--fg-primary);
+  padding: var(--space-3) var(--space-4) var(--space-3) 2.75rem;
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  transition: all 0.2s;
+}
+
+.inputGroup input:focus {
+  outline: none;
+  border-color: var(--brand-primary);
+  box-shadow: var(--shadow-glow);
+}
+
+.searchBtn {
+  background-color: var(--brand-primary);
+  color: var(--bg-base);
+  border: none;
+  padding: 0 var(--space-6);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.searchBtn:hover {
+  background-color: var(--brand-primary-hover);
+}
+
+.mobileNav {
+  display: none;
+}
+
+/* Main Layout */
+.main {
+  flex: 1;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: 400px;
+  background-color: var(--bg-surface);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.filterSection {
+  padding: var(--space-6);
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+.sidebarTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--fg-secondary);
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-4);
+  margin-top: 0;
+}
+
+.sidebarTitleCollapsible {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding: var(--space-2) 0;
+  margin-bottom: var(--space-2);
+}
+
+.sidebarTitleCollapsible h3 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--fg-secondary);
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.sidebarTitleCollapsible:hover {
+  opacity: 0.8;
+}
+
+.filtersWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.resultsArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: var(--bg-surface);
+}
+
+.resultsCount {
+  padding: var(--space-4) var(--space-6);
+  font-size: 0.75rem;
+  color: var(--brand-primary);
+  font-weight: 600;
+  font-family: var(--font-mono);
+  background-color: var(--bg-base);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+.progressBar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background-color: var(--brand-primary);
+  width: 0;
+  animation: progress 2s infinite ease-in-out;
+  box-shadow: 0 0 10px var(--brand-primary);
+}
+
+@keyframes progress {
+  0% { left: -30%; width: 30%; }
+  50% { left: 40%; width: 50%; }
+  100% { left: 100%; width: 30%; }
+}
+
+.filterRow {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.filterInput {
+  flex: 1;
+  min-width: 0;
+  background-color: var(--bg-surface-active);
+  border: 1px solid var(--border-color);
+  color: var(--fg-primary);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+
+.filterInput::placeholder {
+  color: var(--fg-muted);
+}
+
+.filterInput:focus {
+  outline: none;
+  border-color: var(--brand-primary);
+  box-shadow: var(--shadow-glow);
+}
+
+.raceList {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.center {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.raceCard {
+  background-color: var(--bg-surface-active);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.raceCard:hover {
+  border-color: var(--brand-primary);
+  background-color: var(--bg-surface-hover);
+  transform: translateY(-2px);
+}
+
+.selectedRace {
+  border-color: var(--brand-primary);
+  background-color: var(--brand-primary-surface);
+  box-shadow: 0 8px 16px rgba(0, 255, 136, 0.1);
+}
+
+.raceCardHeader {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+}
+
+.raceLogo {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-base);
+  flex-shrink: 0;
+}
+
+.raceNameArea {
+  flex: 1;
+  min-width: 0;
+}
+
+.raceName {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 2px;
+  color: var(--fg-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.raceCardBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.raceMetaGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.8rem;
+  color: var(--fg-secondary);
+}
+
+.metaItem span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.raceCardFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.tagsArea {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.distanceTag {
+  background-color: var(--bg-base);
+  border: 1px solid var(--border-color);
+  color: var(--brand-primary);
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.sidebarRegisterBtn {
+  background-color: var(--brand-primary);
+  color: var(--bg-base);
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 6px 16px;
+  border-radius: 6px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.sidebarRegisterBtn:hover {
+  background-color: var(--brand-primary-hover);
+  transform: scale(1.05);
+}
+
+.cardLoader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.75rem;
+  color: var(--brand-primary);
+  font-weight: 600;
+  font-family: var(--font-mono);
+}
+
+/* Map Section */
+.mapSection {
+  flex: 1;
+  position: relative;
+  height: 100%;
+  transition: filter 0.3s ease;
+}
+
+.mapLocked {
+  pointer-events: none;
+}
+
+.mapBlur {
+  filter: blur(4px) grayscale(0.5);
+}
+
+.map {
+  height: 100% !important;
+  width: 100% !important;
+  min-height: 400px;
+}
+
+/* Custom Marker */
+.customMarker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.markerInner {
+  width: 12px;
+  height: 12px;
+  background-color: var(--brand-primary);
+  border: 2px solid var(--bg-base);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--brand-primary);
+}
+
+/* Custom Popup */
+.popup :global(.leaflet-popup-content-wrapper) {
+  background-color: var(--bg-surface-hover) !important;
+  color: var(--fg-primary) !important;
+  border-radius: var(--radius-md) !important;
+  border: 1px solid var(--brand-primary) !important;
+  box-shadow: var(--shadow-glow) !important;
+  padding: 0;
+}
+
+.popup :global(.leaflet-popup-content) {
+  margin: 12px;
+  width: 240px !important;
+}
+
+.popup :global(.leaflet-popup-tip) {
+  background-color: var(--bg-surface-hover) !important;
+  border: 1px solid var(--brand-primary);
+}
+
+.popupHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.popupDate {
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  color: var(--brand-primary);
+  font-weight: 600;
+}
+
+.popupContent h5 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--fg-primary);
+  line-height: 1.3;
+}
+
+.popupContent p.popupLoc {
+  margin: 0 0 var(--space-2) 0;
+  font-size: 0.8rem;
+  color: var(--fg-secondary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.popupStats {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.popupStats span {
+  font-size: 0.7rem;
+  background-color: var(--bg-base);
+  border: 1px solid var(--border-color);
+  color: var(--fg-secondary);
+  padding: 1px 6px;
+  border-radius: 3px;
+  text-transform: capitalize;
+}
+
+/* Marker Tooltip - Fixed Overflow */
+:global(.leaflet-tooltip).markerTooltip {
+  background-color: #1a1a1b !important;
+  color: #ffffff !important;
+  border: 1px solid var(--brand-primary) !important;
+  border-radius: var(--radius-md) !important;
+  padding: 12px 16px !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), var(--shadow-glow) !important;
+  pointer-events: none;
+  opacity: 1 !important;
+  white-space: normal !important; /* Allow wrapping */
+  max-width: 280px !important; /* Cap width but allow wrapping */
+}
+
+:global(.leaflet-tooltip-top).markerTooltip:before {
+  border-top-color: var(--brand-primary) !important;
+}
+
+.tooltipContent {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%; /* Use full available width */
+}
+
+.tooltipTitle {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #ffffff !important;
+  word-wrap: break-word; /* Fix overflow */
+  overflow-wrap: break-word;
+}
+
+.tooltipMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  color: var(--brand-primary) !important; /* Neon green */
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.tooltipStats {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.tooltipTag {
+  font-size: 0.65rem;
+  background-color: #121212 !important;
+  border: 1px solid var(--border-color);
+  color: var(--fg-secondary) !important;
+  padding: 1px 6px;
+  border-radius: 3px;
+  text-transform: capitalize;
+}
+
+.registerBtn {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  background-color: var(--brand-primary) !important;
+  color: #ffffff !important;
+  text-decoration: none !important;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: var(--space-2) var(--space-6);
+  border-radius: var(--radius-md);
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+
+.registerBtn:hover {
+  background-color: var(--brand-primary-hover) !important;
+  color: #ffffff !important;
+  text-decoration: none !important;
+  box-shadow: var(--shadow-glow);
+}
+
+/* Responsive Overrides */
+@media (max-width: 1200px) {
+  .sidebar {
+    width: 350px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 300px;
+  }
+  
+  .raceCard {
+    padding: var(--space-3);
+  }
+  
+  .raceName {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .main {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: 100%;
+    border-right: none;
+  }
+
+  .mobileNav {
+    display: flex;
+    position: fixed;
+    bottom: var(--space-4);
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #1a1a1b;
+    border: 1px solid var(--brand-primary);
+    border-radius: 99px;
+    padding: 6px;
+    z-index: 1000;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    gap: 4px;
+  }
+
+  .mobileNav button {
+    background: none;
+    border: none;
+    color: var(--fg-muted);
+    padding: 8px 20px;
+    border-radius: 99px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+
+  .mobileNav button.active {
+    background-color: var(--brand-primary);
+    color: var(--bg-base);
+  }
+
+  .mapSection {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* List view on mobile */
+  .list .mapSection {
+    display: none;
+  }
+  
+  .list .sidebar {
+    display: flex;
+  }
+
+  /* Map view on mobile */
+  .map .sidebar {
+    display: none;
+  }
+  
+  .map .mapSection {
+    display: block;
+    height: calc(100vh - 130px);
+  }
+
+  /* Split view on mobile */
+  .split .sidebar {
+    height: 50%;
+  }
+  
+  .split .mapSection {
+    height: 50%;
+  }
+  
+  .raceList {
+    padding-bottom: 80px; /* Space for mobile nav */
+  }
+}
