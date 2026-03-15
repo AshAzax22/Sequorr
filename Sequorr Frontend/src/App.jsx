@@ -8,6 +8,7 @@ import AdminLogin from './pages/admin/AdminLogin';
 import Dashboard from './pages/admin/Dashboard';
 import WaitlistAdmin from './pages/admin/WaitlistAdmin';
 import BlogAdmin from './pages/admin/BlogAdmin';
+import ContactAdmin from './pages/admin/ContactAdmin';
 import BlogEditor from './pages/admin/BlogEditor';
 import FindrrMap from './pages/public/FindrrMap';
 
@@ -31,6 +32,7 @@ function App() {
               <Route path="/admin/dashboard" element={<Dashboard />} />
               <Route path="/admin/waitlist" element={<WaitlistAdmin />} />
               <Route path="/admin/blogs" element={<BlogAdmin />} />
+              <Route path="/admin/contact" element={<ContactAdmin />} />
               <Route path="/admin/blogs/new" element={<BlogEditor />} />
               <Route path="/admin/blogs/edit/:id" element={<BlogEditor />} />
             </Route>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Users, FileText, LogOut } from 'lucide-react';
+import { LayoutDashboard, Users, FileText, MessageSquare, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import styles from './Sidebar.module.css';
 
@@ -8,6 +8,7 @@ const navItems = [
   { path: '/admin/dashboard', icon: <LayoutDashboard size={20} />, label: 'Dashboard' },
   { path: '/admin/waitlist', icon: <Users size={20} />, label: 'Waitlist' },
   { path: '/admin/blogs', icon: <FileText size={20} />, label: 'Blogs' },
+  { path: '/admin/contact', icon: <MessageSquare size={20} />, label: 'Messages' },
 ];
 
 const Sidebar = () => {

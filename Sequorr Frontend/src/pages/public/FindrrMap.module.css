@@ -219,11 +219,11 @@
 .filterInput {
   flex: 1;
   min-width: 0;
-  background-color: var(--bg-surface-active);
-  border: 1px solid var(--border-color);
+  background-color: #000000 !important;
+  border: 1px solid #1a1a1a !important;
   color: var(--fg-primary);
   padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md) !important;
   font-size: 0.85rem;
   transition: all 0.2s;
 }
@@ -234,25 +234,27 @@
 
 .filterInput:focus {
   outline: none;
-  border-color: var(--brand-primary);
-  box-shadow: var(--shadow-glow);
+  border-color: #2EEE34 !important;
+  box-shadow: 0 0 12px rgba(46, 238, 52, 0.3);
 }
 
 .filterInput[type="date"] {
   color-scheme: dark;
   position: relative;
+  accent-color: #2EEE34;
 }
 
 .filterInput[type="date"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
-  /* Filters the default icon to match the neon brand-primary */
-  filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(130deg) brightness(118%) contrast(119%);
-  opacity: 0.7;
-  transition: opacity 0.2s;
+  /* Filters the default icon to exactly #2EEE34 */
+  filter: invert(72%) sepia(35%) saturate(2250%) hue-rotate(65deg) brightness(108%) contrast(100%);
+  opacity: 0.8;
+  transition: opacity 0.2s, transform 0.2s;
 }
 
 .filterInput[type="date"]::-webkit-calendar-picker-indicator:hover {
   opacity: 1;
+  transform: scale(1.1);
 }
 
 .raceList {

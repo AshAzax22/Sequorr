@@ -443,6 +443,33 @@ Set the key in your `.env` file as `ADMIN_API_KEY`.
 
 ---
 
+### `GET /api/contact/admin/stats` — Get contact statistics
+
+**Auth:** `x-api-key` header required
+
+**Response** `200`
+```json
+{
+  "success": true,
+  "data": {
+    "total": 42,
+    "unread": 5,
+    "byStatus": [
+      { "_id": "new", "count": 5 },
+      { "_id": "read", "count": 15 },
+      { "_id": "responded", "count": 22 }
+    ],
+    "byReason": [
+      { "_id": "Technical Support", "count": 20 },
+      { "_id": "General Inquiry", "count": 12 }
+      // ...
+    ]
+  }
+}
+```
+
+---
+
 ### `DELETE /api/contact/admin/:id` — Delete a message
 
 **Auth:** `x-api-key` header required

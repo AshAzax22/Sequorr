@@ -1,16 +1,29 @@
 const express = require('express');
 const router = express.Router();
+const rateLimit = require('express-rate-limit');
 
 const Contact = require('../models/Contact');
 const adminAuth = require('../middleware/adminAuth');
 const { validateContact } = require('../middleware/validate');
 const { sendContactNotification } = require('../services/emailService');
 
+// Rate limiter for contact form (10 req / hour per IP)
+const contactLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: 'Too many messages sent. Please try again later.',
+  },
+});
+
 // ──────────────────────────────────────────────
 // PUBLIC — Submit a contact form
 // POST /api/contact
 // ──────────────────────────────────────────────
-router.post('/', validateContact, async (req, res) => {
+router.post('/', contactLimiter, validateContact, async (req, res) => {
   try {
     const { name, email, reason, message } = req.body;
 
@@ -99,6 +112,51 @@ router.patch('/admin/:id', adminAuth, async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'Failed to update status',
+    });
+  }
+});
+
+// ──────────────────────────────────────────────
+// ADMIN — Get contact stats
+// GET /api/contact/admin/stats
+// ──────────────────────────────────────────────
+router.get('/admin/stats', adminAuth, async (req, res) => {
+  try {
+    const stats = await Contact.aggregate([
+      {
+        $facet: {
+          total: [{ $count: 'count' }],
+          byStatus: [
+            { $group: { _id: '$status', count: { $sum: 1 } } }
+          ],
+          byReason: [
+            { $group: { _id: '$reason', count: { $sum: 1 } } },
+            { $sort: { count: -1 } }
+          ],
+          unread: [
+            { $match: { status: 'new' } },
+            { $count: 'count' }
+          ]
+        }
+      }
+    ]);
+
+    const formattedStats = {
+      total: stats[0].total[0]?.count || 0,
+      unread: stats[0].unread[0]?.count || 0,
+      byStatus: stats[0].byStatus,
+      byReason: stats[0].byReason
+    };
+
+    return res.json({
+      success: true,
+      data: formattedStats
+    });
+  } catch (error) {
+    console.error('Contact Stats error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve stats'
     });
   }
 });

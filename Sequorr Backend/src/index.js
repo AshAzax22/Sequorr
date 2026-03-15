@@ -48,31 +48,9 @@ app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 app.use(express.json({ limit: '1mb' }));
 
 // ── Rate limiters ───────────────────────────
-// Waitlist signup (30 req / 15 min per IP)
-const signupLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 30,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: {
-    success: false,
-    message: 'Too many requests from this IP. Please try again later.',
-  },
-});
-app.use('/api/waitlist', signupLimiter);
+// app.use('/api/waitlist', signupLimiter);
 
-// Contact form (10 req / hour per IP)
-const contactLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000,
-  max: 10,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: {
-    success: false,
-    message: 'Too many messages sent. Please try again later.',
-  },
-});
-app.use('/api/contact', contactLimiter);
+// app.use('/api/contact', contactLimiter);
 
 // Findr race endpoints (100 req / 15 min per IP)
 app.use('/api/races', findrRateLimiter);

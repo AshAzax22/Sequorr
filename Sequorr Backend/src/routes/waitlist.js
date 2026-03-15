@@ -1,16 +1,29 @@
 const express = require('express');
 const router = express.Router();
+const rateLimit = require('express-rate-limit');
 
 const Waitlist = require('../models/Waitlist');
 const adminAuth = require('../middleware/adminAuth');
 const { validateWaitlist } = require('../middleware/validate');
 const { sendWaitlistWelcome } = require('../services/emailService');
 
+// Rate limiter for signups (30 req / 15 min per IP)
+const signupLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: 'Too many requests from this IP. Please try again later.',
+  },
+});
+
 // ──────────────────────────────────────────────
 // PUBLIC — Submit a waitlist signup
 // POST /api/waitlist
 // ──────────────────────────────────────────────
-router.post('/', validateWaitlist, async (req, res) => {
+router.post('/', signupLimiter, validateWaitlist, async (req, res) => {
   try {
     const { email, description, usualMoveTime } = req.body;
 

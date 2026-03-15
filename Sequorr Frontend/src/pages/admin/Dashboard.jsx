@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Users, FileText, Activity, Clock, Server } from 'lucide-react';
+import { Users, FileText, Activity, Clock, Server, MessageSquare } from 'lucide-react';
 import StatCard from '../../components/StatCard';
 import Spinner from '../../components/Spinner';
 import Toast from '../../components/Toast';
 import { checkHealth } from '../../api/health';
 import { getWaitlistStats } from '../../api/waitlist';
 import { getAdminBlogs, getBlogStats } from '../../api/blog';
+import { getContactStats } from '../../api/contact';
 import styles from './Dashboard.module.css';
 
 const Dashboard = () => {
@@ -15,18 +16,20 @@ const Dashboard = () => {
     health: false,
     waitlistStats: null,
     blogData: null,
-    blogStats: null
+    blogStats: null,
+    contactStats: null
   });
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
-        const [healthRes, waitlistRes, blogRes, blogStatsRes] = await Promise.all([
+        const [healthRes, waitlistRes, blogRes, blogStatsRes, contactRes] = await Promise.all([
           checkHealth().catch(() => ({ success: false })),
           getWaitlistStats().catch(e => { throw e; }),
           getAdminBlogs({ limit: 1 }).catch(e => { throw e; }),
-          getBlogStats().catch(e => { throw e; })
+          getBlogStats().catch(e => { throw e; }),
+          getContactStats().catch(() => ({ success: true, data: { unread: 0 } }))
         ]);
 
         setData({
@@ -34,7 +37,8 @@ const Dashboard = () => {
           health: healthRes.success,
           waitlistStats: waitlistRes,
           blogData: blogRes,
-          blogStats: blogStatsRes.data
+          blogStats: blogStatsRes.data,
+          contactStats: contactRes.data
         });
       } catch (err) {
         console.error(err);
@@ -74,14 +78,15 @@ const Dashboard = () => {
           icon={Users} 
         />
         <StatCard 
+          title="New Messages" 
+          value={data.contactStats?.unread || 0} 
+          icon={MessageSquare}
+          trend={data.contactStats?.unread > 0 ? 'new' : null}
+        />
+        <StatCard 
           title="Total Blogs" 
           value={data.blogStats?.totalBlogs || 0} 
           icon={FileText} 
-        />
-        <StatCard 
-          title="Avg Read Time" 
-          value={data.blogData?.data?.[0]?.averageReadTime ? `${data.blogData.data[0].averageReadTime}m` : '0m'} 
-          icon={Clock} 
         />
         <StatCard 
           title="Total Reads" 
