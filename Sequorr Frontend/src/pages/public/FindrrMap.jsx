@@ -4,6 +4,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { MapPin, Search, Calendar, Globe, Navigation, List, Grid, ChevronDown, ChevronUp } from 'lucide-react';
 import { getRaces, getRaceFilters } from '../../api/races';
+import { API_BASE } from '../../api/config';
 import CustomSelect from '../../components/CustomSelect';
 import Spinner from '../../components/Spinner';
 import Toast from '../../components/Toast';
@@ -137,7 +138,7 @@ const FindrrMap = () => {
       if (!geocodingIds.has(race.race_id)) {
         try {
           setGeocodingIds(prev => new Set(prev).add(race.race_id));
-          const response = await fetch('http://localhost:5000/api/races/geocode', {
+          const response = await fetch(`${API_BASE}/races/geocode`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(race.address)
