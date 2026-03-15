@@ -38,6 +38,12 @@ const blogSchema = new mongoose.Schema(
       trim: true,
       maxlength: [300, 'Title must be 300 characters or fewer'],
     },
+    description: {
+      type: String,
+      required: [true, 'Short description is required'],
+      trim: true,
+      maxlength: [500, 'Description must be 500 characters or fewer'],
+    },
     coverImage: {
       type: String,
       trim: true,

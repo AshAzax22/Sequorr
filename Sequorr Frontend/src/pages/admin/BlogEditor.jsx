@@ -7,12 +7,12 @@ import Spinner from '../../components/Spinner';
 import Toast from '../../components/Toast';
 import styles from './BlogEditor.module.css';
 
-const ImagePreview = ({ url, label }) => {
+const ImagePreview = ({ url, label, type }) => {
   if (!url) return null;
   return (
     <div className={styles.previewContainer}>
       <span className={styles.previewLabel}>{label} Preview:</span>
-      <div className={styles.previewFrame}>
+      <div className={`${styles.previewFrame} ${type === 'thumbnail' ? styles.thumbnailPreview : ''}`}>
         <img 
           src={url} 
           alt={label} 
@@ -32,6 +32,7 @@ const BlogEditor = () => {
 
   const [formData, setFormData] = useState({
     title: '',
+    description: '',
     coverImage: '',
     thumbnailImage: '',
     sections: [{ subHeading: '', content: '', imageUrl: '', imageCaption: '' }],
@@ -61,6 +62,7 @@ const BlogEditor = () => {
           if (blogToEdit) {
             setFormData({
               title: blogToEdit.title || '',
+              description: blogToEdit.description || '',
               coverImage: blogToEdit.coverImage || '',
               thumbnailImage: blogToEdit.thumbnailImage || '',
               sections: blogToEdit.sections?.length > 0 ? blogToEdit.sections : [{ subHeading: '', content: '', imageUrl: '', imageCaption: '' }],
@@ -201,6 +203,20 @@ const BlogEditor = () => {
             />
           </div>
 
+          <div className={styles.fieldGroup}>
+            <label className={styles.label}>Short Description / Starter</label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              placeholder="e.g. A brief introduction that hooks the reader before the main sections..."
+              className={`${styles.input} ${styles.textarea} ${styles.descriptionInput}`}
+              required
+              rows={3}
+              maxLength={500}
+            />
+          </div>
+
           <div className={styles.imageFieldsWrapper}>
             <div className={styles.fieldGroup}>
               <label className={styles.label}>Cover Image URL</label>
@@ -225,7 +241,7 @@ const BlogEditor = () => {
                 placeholder="https://images.unsplash.com/..."
                 className={styles.input}
               />
-              <ImagePreview url={formData.thumbnailImage} label="Thumbnail" />
+              <ImagePreview url={formData.thumbnailImage} label="Thumbnail" type="thumbnail" />
             </div>
           </div>
 

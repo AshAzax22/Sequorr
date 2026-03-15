@@ -199,10 +199,11 @@ router.get('/:slug', async (req, res) => {
 // ──────────────────────────────────────────────
 router.post('/', adminAuth, validateBlog, async (req, res) => {
   try {
-    const { title, sections, tags, published, coverImage, thumbnailImage } = req.body;
+    const { title, description, sections, tags, published, coverImage, thumbnailImage } = req.body;
 
     const blog = await Blog.create({
       title: title.trim(),
+      description: description.trim(),
       sections,
       tags: tags || [],
       published: published !== undefined ? published : true,
@@ -233,7 +234,7 @@ router.post('/', adminAuth, validateBlog, async (req, res) => {
 // ──────────────────────────────────────────────
 router.put('/:id', adminAuth, validateBlog, async (req, res) => {
   try {
-    const { title, sections, tags, published, coverImage, thumbnailImage } = req.body;
+    const { title, description, sections, tags, published, coverImage, thumbnailImage } = req.body;
 
     const blog = await Blog.findById(req.params.id);
     if (!blog) {
@@ -241,6 +242,7 @@ router.put('/:id', adminAuth, validateBlog, async (req, res) => {
     }
 
     blog.title = title.trim();
+    if (description !== undefined) blog.description = description.trim();
     blog.sections = sections;
     if (tags) blog.tags = tags;
     if (published !== undefined) blog.published = published;

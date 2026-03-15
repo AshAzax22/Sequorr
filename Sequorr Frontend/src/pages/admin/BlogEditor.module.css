@@ -446,3 +446,17 @@
   object-fit: cover;
   display: block;
 }
+
+.thumbnailPreview {
+  width: 300px;
+  height: 400px !important;
+  max-height: none !important;
+  aspect-ratio: 3 / 4;
+}
+
+.descriptionInput {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--fg-primary);
+  opacity: 0.9;
+}

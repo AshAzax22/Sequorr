@@ -25,6 +25,16 @@ const validateBlog = (req, res, next) => {
     req.body.title = stripHtml(title);
   }
 
+  // ── description ──
+  const { description } = req.body;
+  if (!description || typeof description !== 'string' || !description.trim()) {
+    errors.push('Blog description is required');
+  } else if (description.trim().length > 500) {
+    errors.push('Description must be 500 characters or fewer');
+  } else {
+    req.body.description = stripHtml(description);
+  }
+
   // ── optional images (root) ──
   if (coverImage && typeof coverImage === 'string') {
     req.body.coverImage = stripHtml(coverImage);
