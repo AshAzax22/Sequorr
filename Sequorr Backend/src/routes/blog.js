@@ -51,7 +51,7 @@ router.get('/', async (req, res) => {
 
     const [blogs, total] = await Promise.all([
       Blog.find(filter)
-        .select('title slug tags averageReadTime readCount createdAt')
+        .select('title slug tags thumbnailImage averageReadTime readCount createdAt')
         .sort(sort)
         .skip(skip)
         .limit(limit),

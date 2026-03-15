@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { Plus, Edit2, Trash2, Eye, Search, Filter } from 'lucide-react';
 import { getAdminBlogs, deleteBlog } from '../../api/blog';
 import { getTags } from '../../api/tags';
@@ -21,6 +21,7 @@ const BlogAdmin = () => {
   const [availableTags, setAvailableTags] = useState([]);
   const [expandedTagsId, setExpandedTagsId] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const fetchBlogs = async (page = 1) => {
     try {
@@ -49,8 +50,13 @@ const BlogAdmin = () => {
       try {
         const tagsRes = await getTags();
         if (tagsRes.success) setAvailableTags(tagsRes.tags);
+        
+        // Handle initial page load from state if returning from editor
+        const initialPage = location.state?.page || 1;
+        fetchBlogs(initialPage);
       } catch (err) {
         console.error('Failed to get tags', err);
+        fetchBlogs(1);
       }
     };
     fetchData();
@@ -58,7 +64,11 @@ const BlogAdmin = () => {
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      fetchBlogs(1);
+      // If we have a location state page, we already fetched it in the first useEffect
+      // so we only fetch here if state is null or it's a filter change
+      if (!location.state?.page) {
+        fetchBlogs(1);
+      }
     }, 400);
 
     return () => clearTimeout(delayDebounceFn);
@@ -95,7 +105,7 @@ const BlogAdmin = () => {
       // No sections in the list!
       // So quick toggle publish is tricky unless we fetch it first.
       // To keep it clean, let's just show status and direct users to Edit to change status.
-      navigate(`/admin/blogs/edit/${blog._id}`);
+      navigate(`/admin/blogs/edit/${blog._id}`, { state: { fromPage: data.page } });
     } catch (err) {
       setToast({ type: 'error', message: err.message || 'Failed to update' });
     }
@@ -121,7 +131,7 @@ const BlogAdmin = () => {
           <div className={styles.totalBadge}>{data.total} total</div>
         </div>
         
-        <Link to="/admin/blogs/new" className={styles.newBtn}>
+        <Link to="/admin/blogs/new" state={{ fromPage: data.page }} className={styles.newBtn}>
           <Plus size={18} />
           <span>New Post</span>
         </Link>
@@ -264,6 +274,7 @@ const BlogAdmin = () => {
                       <div className={styles.actionsGroup}>
                         <Link 
                           to={`/admin/blogs/edit/${blog._id}`}
+                          state={{ fromPage: data.page }}
                           className={styles.actionBtn}
                           aria-label="Edit blog"
                           title="Edit blog"

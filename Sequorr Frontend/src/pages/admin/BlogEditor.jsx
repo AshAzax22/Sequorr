@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Save, Plus, Trash2, ArrowLeft } from 'lucide-react';
 import { createBlog, updateBlog, getAdminBlogById } from '../../api/blog';
 import { getTags, createTag } from '../../api/tags';
@@ -47,6 +47,8 @@ const BlogEditor = () => {
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
+  const fromPage = location.state?.fromPage || 1;
 
   useEffect(() => {
     const initData = async () => {
@@ -156,7 +158,7 @@ const BlogEditor = () => {
         await createBlog(formData);
         setToast({ type: 'success', message: 'Blog created successfully' });
       }
-      setTimeout(() => navigate('/admin/blogs'), 1500);
+      setTimeout(() => navigate('/admin/blogs', { state: { page: fromPage } }), 1500);
     } catch (err) {
       setToast({ type: 'error', message: err.message || 'Failed to save blog' });
     } finally {
@@ -174,7 +176,11 @@ const BlogEditor = () => {
       
       <div className={styles.header}>
         <div className={styles.titleArea}>
-          <button className={styles.backBtn} onClick={() => navigate('/admin/blogs')} aria-label="Back">
+          <button 
+            className={styles.backBtn} 
+            onClick={() => navigate('/admin/blogs', { state: { page: fromPage } })} 
+            aria-label="Back"
+          >
             <ArrowLeft size={20} />
           </button>
           <h1 className={styles.title}>{id ? 'Edit Blog' : 'New Blog'}</h1>

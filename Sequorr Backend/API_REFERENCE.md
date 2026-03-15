@@ -465,6 +465,7 @@ Set the key in your `.env` file as `ADMIN_API_KEY`.
       "slug": "5-daily-habits-that-transform-your-fitness-m5gf1k",
       "tags": ["daily-habit", "motivation"],
       "averageReadTime": 3,
+      "thumbnailImage": "https://...",
       "readCount": 128,
       "createdAt": "2026-02-27T12:00:00.000Z"
     }
