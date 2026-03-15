@@ -287,6 +287,21 @@
   width: 120px;
 }
 
+.statLine {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--fg-secondary);
+  font-size: 0.8rem;
+}
+
+.statIcon {
+  color: var(--fg-muted);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
 .dateCol {
   width: 130px;
   white-space: nowrap;
@@ -330,9 +345,25 @@
 }
 
 .paginationWrapper {
-  padding: var(--space-2) var(--space-6);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-4) var(--space-6);
   border-top: 1px dashed var(--border-color);
   background-color: var(--bg-base);
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.resultStats {
+  font-size: 0.875rem;
+  color: var(--fg-secondary);
+}
+
+.statNumber {
+  color: var(--fg-primary);
+  font-weight: 500;
+  font-family: var(--font-mono);
 }
 
 @media (max-width: 480px) {

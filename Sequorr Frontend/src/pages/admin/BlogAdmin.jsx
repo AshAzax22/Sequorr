@@ -286,6 +286,17 @@ const BlogAdmin = () => {
             </table>
             
             <div className={styles.paginationWrapper}>
+              <div className={styles.resultStats}>
+                {data.total > 0 ? (
+                  <>
+                    Showing <span className={styles.statNumber}>{(data.page - 1) * 15 + 1}</span> to{' '}
+                    <span className={styles.statNumber}>{Math.min(data.page * 15, data.total)}</span> of{' '}
+                    <span className={styles.statNumber}>{data.total}</span> results
+                  </>
+                ) : (
+                  'No results'
+                )}
+              </div>
               <Pagination 
                 currentPage={data.page} 
                 totalPages={data.totalPages} 

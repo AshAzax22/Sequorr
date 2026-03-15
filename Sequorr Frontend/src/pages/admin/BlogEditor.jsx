@@ -38,6 +38,7 @@ const BlogEditor = () => {
     sections: [{ subHeading: '', content: '', imageUrl: '', imageCaption: '' }],
     tags: [],
     published: true,
+    isFeatured: false,
   });
   const [availableTags, setAvailableTags] = useState([]);
   const [newTag, setNewTag] = useState('');
@@ -68,6 +69,7 @@ const BlogEditor = () => {
               sections: blogToEdit.sections?.length > 0 ? blogToEdit.sections : [{ subHeading: '', content: '', imageUrl: '', imageCaption: '' }],
               tags: blogToEdit.tags || [],
               published: blogToEdit.published ?? true,
+              isFeatured: blogToEdit.isFeatured || false,
             });
           } else {
             setToast({ type: 'error', message: 'Blog not found.' });
@@ -153,8 +155,8 @@ const BlogEditor = () => {
       } else {
         await createBlog(formData);
         setToast({ type: 'success', message: 'Blog created successfully' });
-        setTimeout(() => navigate('/admin/blogs'), 1500);
       }
+      setTimeout(() => navigate('/admin/blogs'), 1500);
     } catch (err) {
       setToast({ type: 'error', message: err.message || 'Failed to save blog' });
     } finally {
@@ -346,6 +348,28 @@ const BlogEditor = () => {
             </label>
             <p className={styles.cardDesc}>
               Drafts are only visible in the admin dashboard.
+            </p>
+          </div>
+
+          <div className={styles.card}>
+            <h3 className={styles.cardTitle}>Featured Setting</h3>
+            <label className={styles.toggleLabel}>
+              <div className={styles.toggleWrapper}>
+                <input
+                  type="checkbox"
+                  name="isFeatured"
+                  checked={formData.isFeatured}
+                  onChange={handleChange}
+                  className={styles.realCheckbox}
+                />
+                <div className={`${styles.fakeToggle} ${formData.isFeatured ? styles.toggleOn : ''}`}>
+                  <div className={styles.toggleKnob}></div>
+                </div>
+              </div>
+              <span>{formData.isFeatured ? 'Featured Post' : 'Standard Post'}</span>
+            </label>
+            <p className={styles.cardDesc}>
+              Featured posts appear in the "Featured" section of the blog.
             </p>
           </div>
 

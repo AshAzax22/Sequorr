@@ -203,11 +203,7 @@ router.get('/admin/:id', adminAuth, async (req, res) => {
 // ──────────────────────────────────────────────
 router.get('/:slug', async (req, res) => {
   try {
-    const blog = await Blog.findOneAndUpdate(
-      { slug: req.params.slug, published: true },
-      { $inc: { readCount: 1 } },
-      { new: true }
-    );
+    const blog = await Blog.findOne({ slug: req.params.slug, published: true });
 
     if (!blog) {
       return res.status(404).json({ success: false, message: 'Blog not found' });
@@ -217,6 +213,29 @@ router.get('/:slug', async (req, res) => {
   } catch (error) {
     console.error('Blog detail error:', error);
     return res.status(500).json({ success: false, message: 'Failed to retrieve blog' });
+  }
+});
+
+// ──────────────────────────────────────────────
+// PUBLIC — Increment blog read count
+// PATCH /api/blog/:id/read
+// ──────────────────────────────────────────────
+router.patch('/:id/read', async (req, res) => {
+  try {
+    const blog = await Blog.findByIdAndUpdate(
+      req.params.id,
+      { $inc: { readCount: 1 } },
+      { new: true }
+    );
+
+    if (!blog) {
+      return res.status(404).json({ success: false, message: 'Blog not found' });
+    }
+
+    return res.json({ success: true, count: blog.readCount });
+  } catch (error) {
+    console.error('Increment read count error:', error);
+    return res.status(500).json({ success: false, message: 'Failed to increment read count' });
   }
 });
 

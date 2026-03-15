@@ -38,9 +38,10 @@ The Findrr engine proxies the **RunSignUp API**. It uses a sophisticated "Lazy G
 ### 2. Blog CMS
 A full-featured content management system with support for dynamic tags and multimedia sections.
 
-- **`Blog.js` (Model)**: Uses a flexible Mongoose schema with embedded `sections` and dynamic `tags`. It features pre-validate hooks to auto-generate SEO-friendly slugs and estimate average read times.
-- **`tags.js` (Routes)**: Manages dynamic taxonomy. Tags are stored in a dedicated `Tag` collection, allowing the blog editor to fetch and create them on-the-fly without hardcoded enums.
-- **`validateBlog.js`**: Strict Joi-based validation to ensure content integrity before it hits the database.
+- **`Blog.js` (Model)**: Uses a flexible Mongoose schema with embedded `sections` and dynamic `tags`. It includes `description`, `coverImage`, and `thumbnailImage`. Pre-validate hooks auto-generate slugs and estimate read times.
+- **`tags.js` (Routes)**: Manages dynamic taxonomy. Tags are stored in a dedicated `Tag` collection, allowing the blog editor to fetch and create them on-the-fly.
+- **`validateBlog.js`**: Strict Joi-based validation including `isFeatured` and multimedia fields.
+- **Featured & Stats Logic**: Supports dedicated endpoints for featured blogs and explicit read-count incrementing via a separate PATCH route.
 
 ### 3. Admin & Authentication
 - **`admin.js` (Routes)**: Handles the login process. It validates the client-side API key against the server's `.env` and issues a short-lived **JWT (JSON Web Token)**.

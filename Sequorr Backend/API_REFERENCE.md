@@ -331,55 +331,6 @@ Set the key in your `.env` file as `ADMIN_API_KEY`.
  
  ---
 
-## Contact
-
-### `POST /api/contact` — Submit a contact form
-
-**Auth:** None  
-**Rate Limit:** 10 requests / 1 hour per IP  
-**Content-Type:** `application/json`
-
-> When a message is submitted, the Sequorr team is automatically notified via email (if SMTP is configured in `.env`).
-
-**Request Body**
-```json
-{
-  "name": "Jane Doe",
-  "email": "jane@example.com",
-  "reason": "Partnership Opportunity",
-  "message": "I would love to discuss a potential partnership with Sequorr..."
-}
-```
-
-| Field     | Type   | Required | Notes                                                                 |
-|-----------|--------|----------|-----------------------------------------------------------------------|
-| `name`    | string | ✅       | Sender's name                                                         |
-| `email`   | string | ✅       | Valid email address                                                   |
-| `reason`  | string | ✅       | Must be one of the allowed reasons (see below)                        |
-| `message` | string | ✅       | Max 2000 characters                                                   |
-
-**Allowed Reasons:**
-- `General Inquiry`
-- `Technical Support / Bug Report`
-- `Partnership Opportunity`
-- `Feedback & Suggestions`
-- `Media Inquiry`
-
-**Response** `201`
-```json
-{
-  "success": true,
-  "message": "Your message has been sent successfully! We will get back to you soon."
-}
-```
-
-**Errors**
-
-| Status | Response |
-|--------|----------|
-| `400`  | `{ "success": false, "errors": ["Name is required", "..."] }` |
-| `429`  | `{ "success": false, "message": "Too many messages sent. Please try again later." }` |
-
 ---
 
 ### `GET /api/contact/admin` — List all contact messages
@@ -525,19 +476,60 @@ Set the key in your `.env` file as `ADMIN_API_KEY`.
 
 ---
 
-### `GET /api/blog/tags` — Available tags
+### `GET /api/blog/tags` — Static tags list (Legacy)
 
 **Auth:** None
+
+> Returns a hardcoded list of tags. For the full dynamic list, use `GET /api/tags`.
 
 **Response** `200`
 ```json
 {
   "success": true,
-  "tags": [
-    "daily-habit", "real-life-fitness", "weightlifting", "cardio",
-    "nutrition", "mental-health", "flexibility", "bodyweight",
-    "recovery", "motivation"
-  ]
+  "tags": ["daily-habit", "nutrition", "..."]
+}
+```
+
+---
+
+## Dynamic Tags
+
+### `GET /api/tags` — List all dynamic tags
+
+**Auth:** None
+
+> Returns all tags stored in the database. Used for the blog editor and frontend filters.
+
+**Response** `200`
+```json
+{
+  "success": true,
+  "data": [
+    { "_id": "...", "name": "cardio", "createdAt": "..." }
+  ],
+  "tags": ["cardio", "nutrition"] 
+}
+```
+
+---
+
+### `POST /api/tags` — Create a new tag (admin)
+
+**Auth:** `x-api-key` header required
+
+**Request Body**
+```json
+{
+  "name": "New Tag"
+}
+```
+
+**Response** `201`
+```json
+{
+  "success": true,
+  "message": "Tag created successfully",
+  "data": { ... }
 }
 ```
 
@@ -589,7 +581,7 @@ Set the key in your `.env` file as `ADMIN_API_KEY`.
 
 **Auth:** None
 
-> Automatically increments `readCount` each time this endpoint is called.
+> Returns the full blog details. Unlike standard listing, this does **not** automatically increment the read count (see the `/read` endpoint).
 
 **URL Params**
 
@@ -607,19 +599,21 @@ Set the key in your `.env` file as `ADMIN_API_KEY`.
     "_id": "65f...",
     "title": "5 Daily Habits That Transform Your Fitness",
     "slug": "5-daily-habits-that-transform-your-fitness-m5gf1k",
+    "description": "A brief introduction that hooks the reader...",
+    "coverImage": "https://...",
+    "thumbnailImage": "https://...",
     "sections": [
       {
         "subHeading": "Start Your Morning Right",
-        "content": "Waking up early and doing a 10-minute stretch..."
-      },
-      {
-        "subHeading": "Hydration Is Key",
-        "content": "Drinking at least 2 liters of water daily..."
+        "content": "Waking up early and doing a 10-minute stretch...",
+        "imageUrl": "https://...",
+        "imageCaption": "A morning stretch"
       }
     ],
     "averageReadTime": 3,
     "tags": ["daily-habit", "motivation"],
     "readCount": 129,
+    "isFeatured": true,
     "published": true,
     "createdAt": "2026-02-27T12:00:00.000Z",
     "updatedAt": "2026-02-27T12:00:00.000Z"
@@ -632,6 +626,46 @@ Set the key in your `.env` file as `ADMIN_API_KEY`.
 | Status | Response |
 |--------|----------|
 | `404`  | `{ "success": false, "message": "Blog not found" }` |
+
+---
+
+### `PATCH /api/blog/:id/read` — Increment read count (public)
+
+**Auth:** None
+
+> Explicitly increments the `readCount` for a blog. Recommended for scroll-based tracking.
+
+**URL Params**
+
+| Param | Type   | Description            |
+|-------|--------|------------------------|
+| `id`  | string | MongoDB `_id` of blog  |
+
+**Response** `200`
+```json
+{
+  "success": true,
+  "count": 130
+}
+```
+
+---
+
+### `GET /api/blog/featured` — Get featured blogs (public)
+
+**Auth:** None
+
+> Returns the latest 6 blogs marked as `isFeatured`. Fallbacks to the 3 most recent published blogs if none are marked.
+
+**Response** `200`
+```json
+{
+  "success": true,
+  "data": [ ... ]
+}
+```
+
+---
 
 ---
 
