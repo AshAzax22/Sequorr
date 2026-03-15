@@ -49,7 +49,7 @@ const FindrrMap = () => {
     country: 'US',
     zipcode: '',
     radius: 25,
-    start_date: '',
+    start_date: new Date().toISOString().split('T')[0],
     end_date: '',
     event_type: '',
     min_distance: '',

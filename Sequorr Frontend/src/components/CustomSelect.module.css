@@ -23,6 +23,11 @@
   border-color: var(--border-color-focus);
 }
 
+.trigger:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+}
+
 .trigger.open {
   border-color: var(--brand-primary);
   border-bottom-left-radius: 0;
