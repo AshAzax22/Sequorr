@@ -15,7 +15,7 @@ Sequorr Backend/
 │   ├── config/         # System configurations (DB, API keys, etc.)
 │   ├── controllers/    # Request handlers and business logic
 │   ├── middleware/     # Auth, validation, and rate limiting
-│   ├── models/         # Mongoose schemas (Blog, Tag, Waitlist)
+│   ├── models/         # Mongoose schemas (Blog, Tag, Waitlist, Contact)
 │   ├── routes/         # API endpoint definitions
 │   ├── services/       # External API integrations (RunSignUp, Nominatim)
 │   ├── utils/          # Helper functions (normalization, fetch-with-timeout)

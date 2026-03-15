@@ -33,4 +33,48 @@ const validateWaitlist = (req, res, next) => {
   next();
 };
 
-module.exports = validateWaitlist;
+/**
+ * Validates the contact form request body.
+ */
+const validateContact = (req, res, next) => {
+  const { name, email, reason, message } = req.body;
+  const errors = [];
+
+  if (!name || typeof name !== 'string' || !name.trim()) {
+    errors.push('Name is required');
+  }
+
+  if (!email || typeof email !== 'string' || !email.trim()) {
+    errors.push('Email is required');
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+    errors.push('Please provide a valid email address');
+  }
+
+  const validReasons = [
+    'General Inquiry',
+    'Technical Support / Bug Report',
+    'Partnership Opportunity',
+    'Feedback & Suggestions',
+    'Media Inquiry'
+  ];
+  if (!reason || !validReasons.includes(reason)) {
+    errors.push('A valid reason for contacting is required');
+  }
+
+  if (!message || typeof message !== 'string' || !message.trim()) {
+    errors.push('Message is required');
+  } else if (message.trim().length > 2000) {
+    errors.push('Message must be 2000 characters or fewer');
+  }
+
+  if (errors.length > 0) {
+    return res.status(400).json({ success: false, errors });
+  }
+
+  next();
+};
+
+module.exports = {
+  validateWaitlist,
+  validateContact,
+};

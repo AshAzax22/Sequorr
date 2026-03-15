@@ -95,4 +95,44 @@ async function sendWaitlistWelcome(toEmail) {
   }
 }
 
-module.exports = { sendWaitlistWelcome };
+/**
+ * Send a notification email to the team when a new contact form is submitted.
+ * @param {object} contactData — the contact document from DB
+ */
+async function sendContactNotification(contactData) {
+  if (!transporter) {
+    console.log(`📧 [SKIP] Contact notification from ${contactData.email} — email not configured`);
+    return { sent: false, reason: 'Email not configured' };
+  }
+
+  const mailOptions = {
+    from: `"Sequorr Contact" <${EMAIL_FROM || SMTP_USER}>`,
+    to: EMAIL_FROM || SMTP_USER, // Send to team email
+    subject: `New Contact Inquiry: ${contactData.reason}`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 600px; border: 1px solid #eee; padding: 20px;">
+        <h2 style="color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px;">New Contact Submission</h2>
+        <p><strong>From:</strong> ${contactData.name} (${contactData.email})</p>
+        <p><strong>Reason:</strong> ${contactData.reason}</p>
+        <p><strong>Message:</strong></p>
+        <div style="background: #f9f9f9; padding: 15px; border-radius: 4px; white-space: pre-wrap;">${contactData.message}</div>
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
+        <p style="color: #999; font-size: 12px;">Submitted at: ${contactData.createdAt.toLocaleString()}</p>
+      </div>
+    `,
+  };
+
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`📧 Contact notification sent to team (messageId: ${info.messageId})`);
+    return { sent: true, messageId: info.messageId };
+  } catch (error) {
+    console.error(`📧 [ERROR] Failed to send contact notification:`, error.message);
+    return { sent: false, reason: error.message };
+  }
+}
+
+module.exports = {
+  sendWaitlistWelcome,
+  sendContactNotification,
+};

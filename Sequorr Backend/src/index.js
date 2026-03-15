@@ -13,6 +13,7 @@ const blogRoutes = require('./routes/blog');
 const tagsRoutes = require('./routes/tags');
 const racesRoutes = require('./routes/races');
 const adminRoutes = require('./routes/admin');
+const contactRoutes = require('./routes/contact');
 const findrRateLimiter = require('./middleware/rateLimiter');
 const { errorHandler } = require('./middleware/errorHandler');
 
@@ -60,6 +61,19 @@ const signupLimiter = rateLimit({
 });
 app.use('/api/waitlist', signupLimiter);
 
+// Contact form (10 req / hour per IP)
+const contactLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: 'Too many messages sent. Please try again later.',
+  },
+});
+app.use('/api/contact', contactLimiter);
+
 // Findr race endpoints (100 req / 15 min per IP)
 app.use('/api/races', findrRateLimiter);
 app.use('/api/race', findrRateLimiter);
@@ -70,6 +84,7 @@ app.use('/api/blog', blogRoutes);
 app.use('/api/tags', tagsRoutes);
 app.use('/api/races', racesRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/contact', contactRoutes);
 app.use('/api/race', racesRoutes);  // single-race route mounts on /api/race/:raceId
 
 // Health-check (single consistent shape)

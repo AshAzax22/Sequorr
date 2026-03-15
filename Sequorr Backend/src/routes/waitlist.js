@@ -3,7 +3,7 @@ const router = express.Router();
 
 const Waitlist = require('../models/Waitlist');
 const adminAuth = require('../middleware/adminAuth');
-const validateWaitlist = require('../middleware/validate');
+const { validateWaitlist } = require('../middleware/validate');
 const { sendWaitlistWelcome } = require('../services/emailService');
 
 // ──────────────────────────────────────────────
