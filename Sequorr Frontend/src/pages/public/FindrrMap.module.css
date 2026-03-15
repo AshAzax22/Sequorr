@@ -238,6 +238,23 @@
   box-shadow: var(--shadow-glow);
 }
 
+.filterInput[type="date"] {
+  color-scheme: dark;
+  position: relative;
+}
+
+.filterInput[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  /* Filters the default icon to match the neon brand-primary */
+  filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(130deg) brightness(118%) contrast(119%);
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.filterInput[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
 .raceList {
   flex: 1;
   overflow-y: auto;
