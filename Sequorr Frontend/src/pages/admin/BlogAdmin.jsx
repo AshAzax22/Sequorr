@@ -19,6 +19,7 @@ const BlogAdmin = () => {
   const [deleteId, setDeleteId] = useState(null);
   const [filters, setFilters] = useState({ search: '', status: 'all', sort: 'newest', tags: '' });
   const [availableTags, setAvailableTags] = useState([]);
+  const [expandedTagsId, setExpandedTagsId] = useState(null);
   const navigate = useNavigate();
 
   const fetchBlogs = async (page = 1) => {
@@ -219,11 +220,32 @@ const BlogAdmin = () => {
                     </td>
                     <td className={styles.tagsCol}>
                       <div className={styles.tagsWrapper}>
-                        {blog.tags?.slice(0, 2).map(tag => (
-                          <TagBadge key={tag} label={tag} />
-                        ))}
-                        {blog.tags?.length > 2 && (
-                          <span className={styles.moreTags}>+{blog.tags.length - 2}</span>
+                        {expandedTagsId === blog._id ? (
+                          <>
+                            {blog.tags?.map(tag => (
+                              <TagBadge key={tag} label={tag} />
+                            ))}
+                            <button 
+                              className={styles.hideBtn}
+                              onClick={() => setExpandedTagsId(null)}
+                            >
+                              Hide
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            {blog.tags?.slice(0, 2).map(tag => (
+                              <TagBadge key={tag} label={tag} />
+                            ))}
+                            {blog.tags?.length > 2 && (
+                              <button 
+                                className={styles.moreTags}
+                                onClick={() => setExpandedTagsId(blog._id)}
+                              >
+                                +{blog.tags.length - 2}
+                              </button>
+                            )}
+                          </>
                         )}
                       </div>
                     </td>

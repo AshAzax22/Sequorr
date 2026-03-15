@@ -72,6 +72,33 @@ router.get('/', async (req, res) => {
 });
 
 // ──────────────────────────────────────────────
+// PUBLIC — Get Featured Blogs
+// GET /api/blog/featured
+// ──────────────────────────────────────────────
+router.get('/featured', async (req, res) => {
+  try {
+    const blogs = await Blog.find({ published: true, isFeatured: true })
+      .select('title slug tags description thumbnailImage averageReadTime createdAt')
+      .sort({ createdAt: -1 })
+      .limit(6);
+
+    // Fallback if no featured blogs exist
+    if (blogs.length === 0) {
+      const fallback = await Blog.find({ published: true })
+        .select('title slug tags description thumbnailImage averageReadTime createdAt')
+        .sort({ createdAt: -1 })
+        .limit(3);
+      return res.json({ success: true, data: fallback, fallback: true });
+    }
+
+    return res.json({ success: true, data: blogs });
+  } catch (error) {
+    console.error('Featured blog error:', error);
+    return res.status(500).json({ success: false, message: 'Failed to retrieve featured blogs' });
+  }
+});
+
+// ──────────────────────────────────────────────
 // ADMIN — Get Dashboard Stats
 // GET /api/blog/admin/stats
 // ──────────────────────────────────────────────
@@ -199,7 +226,7 @@ router.get('/:slug', async (req, res) => {
 // ──────────────────────────────────────────────
 router.post('/', adminAuth, validateBlog, async (req, res) => {
   try {
-    const { title, description, sections, tags, published, coverImage, thumbnailImage } = req.body;
+    const { title, description, sections, tags, published, coverImage, thumbnailImage, isFeatured } = req.body;
 
     const blog = await Blog.create({
       title: title.trim(),
@@ -207,6 +234,7 @@ router.post('/', adminAuth, validateBlog, async (req, res) => {
       sections,
       tags: tags || [],
       published: published !== undefined ? published : true,
+      isFeatured: isFeatured || false,
       coverImage,
       thumbnailImage,
     });
@@ -234,7 +262,7 @@ router.post('/', adminAuth, validateBlog, async (req, res) => {
 // ──────────────────────────────────────────────
 router.put('/:id', adminAuth, validateBlog, async (req, res) => {
   try {
-    const { title, description, sections, tags, published, coverImage, thumbnailImage } = req.body;
+    const { title, description, sections, tags, published, coverImage, thumbnailImage, isFeatured } = req.body;
 
     const blog = await Blog.findById(req.params.id);
     if (!blog) {
@@ -246,6 +274,7 @@ router.put('/:id', adminAuth, validateBlog, async (req, res) => {
     blog.sections = sections;
     if (tags) blog.tags = tags;
     if (published !== undefined) blog.published = published;
+    if (isFeatured !== undefined) blog.isFeatured = isFeatured;
     if (coverImage !== undefined) blog.coverImage = coverImage;
     if (thumbnailImage !== undefined) blog.thumbnailImage = thumbnailImage;
 

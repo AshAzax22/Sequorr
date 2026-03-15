@@ -13,7 +13,7 @@ function stripHtml(str) {
  * Validates the blog creation / update request body.
  */
 const validateBlog = (req, res, next) => {
-  const { title, sections, tags, coverImage, thumbnailImage } = req.body;
+  const { title, sections, tags, coverImage, thumbnailImage, isFeatured } = req.body;
   const errors = [];
 
   // ── title ──

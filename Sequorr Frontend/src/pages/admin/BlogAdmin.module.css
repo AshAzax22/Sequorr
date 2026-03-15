@@ -228,16 +228,59 @@
   border-color: var(--border-color-focus);
 }
 
+.tagsCol {
+  width: 150px;
+}
+
 .tagsWrapper {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: var(--space-2);
-  align-items: center;
+  align-items: flex-start;
+  max-height: 90px;
+  overflow-y: auto;
+  padding-right: 2px;
+  
+  /* Hide Scrollbar */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.tagsWrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.moreTags, .hideBtn {
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid var(--border-color);
+  font-family: var(--font-mono);
+  font-weight: 600;
 }
 
 .moreTags {
-  font-size: 0.75rem;
+  color: var(--fg-secondary);
+  background: transparent;
+  border: none;
+}
+
+.moreTags:hover {
+  color: var(--fg-primary);
+  background: var(--bg-surface-active);
+}
+
+.hideBtn {
   color: var(--fg-muted);
+  background: var(--bg-surface-active);
+  margin-top: 2px;
+}
+
+.hideBtn:hover {
+  background: var(--border-color);
+  color: var(--fg-primary);
 }
 
 .statsCol {
