@@ -7,6 +7,26 @@ import Spinner from '../../components/Spinner';
 import Toast from '../../components/Toast';
 import styles from './BlogEditor.module.css';
 
+const ImagePreview = ({ url, label }) => {
+  if (!url) return null;
+  return (
+    <div className={styles.previewContainer}>
+      <span className={styles.previewLabel}>{label} Preview:</span>
+      <div className={styles.previewFrame}>
+        <img 
+          src={url} 
+          alt={label} 
+          className={styles.previewImage} 
+          onError={(e) => {
+            e.target.onerror = null; 
+            e.target.src = 'https://placehold.co/600x400?text=Invalid+Image+URL';
+          }}
+        />
+      </div>
+    </div>
+  );
+};
+
 const BlogEditor = () => {
   const { id } = useParams();
 
@@ -192,6 +212,7 @@ const BlogEditor = () => {
                 placeholder="https://images.unsplash.com/..."
                 className={styles.input}
               />
+              <ImagePreview url={formData.coverImage} label="Cover" />
             </div>
             
             <div className={styles.fieldGroup}>
@@ -204,6 +225,7 @@ const BlogEditor = () => {
                 placeholder="https://images.unsplash.com/..."
                 className={styles.input}
               />
+              <ImagePreview url={formData.thumbnailImage} label="Thumbnail" />
             </div>
           </div>
 
@@ -262,6 +284,7 @@ const BlogEditor = () => {
                     placeholder="https://..."
                     className={styles.input}
                   />
+                  <ImagePreview url={section.imageUrl} label={`Section ${index + 1}`} />
                 </div>
 
                 {section.imageUrl && (
