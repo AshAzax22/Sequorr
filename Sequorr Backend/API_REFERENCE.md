@@ -329,7 +329,135 @@ Set the key in your `.env` file as `ADMIN_API_KEY`.
  
  ---
  
- ## Blog
+ ---
+
+## Contact
+
+### `POST /api/contact` — Submit a contact form
+
+**Auth:** None  
+**Rate Limit:** 10 requests / 1 hour per IP  
+**Content-Type:** `application/json`
+
+> When a message is submitted, the Sequorr team is automatically notified via email (if SMTP is configured in `.env`).
+
+**Request Body**
+```json
+{
+  "name": "Jane Doe",
+  "email": "jane@example.com",
+  "reason": "Partnership Opportunity",
+  "message": "I would love to discuss a potential partnership with Sequorr..."
+}
+```
+
+| Field     | Type   | Required | Notes                                                                 |
+|-----------|--------|----------|-----------------------------------------------------------------------|
+| `name`    | string | ✅       | Sender's name                                                         |
+| `email`   | string | ✅       | Valid email address                                                   |
+| `reason`  | string | ✅       | Must be one of the allowed reasons (see below)                        |
+| `message` | string | ✅       | Max 2000 characters                                                   |
+
+**Allowed Reasons:**
+- `General Inquiry`
+- `Technical Support / Bug Report`
+- `Partnership Opportunity`
+- `Feedback & Suggestions`
+- `Media Inquiry`
+
+**Response** `201`
+```json
+{
+  "success": true,
+  "message": "Your message has been sent successfully! We will get back to you soon."
+}
+```
+
+**Errors**
+
+| Status | Response |
+|--------|----------|
+| `400`  | `{ "success": false, "errors": ["Name is required", "..."] }` |
+| `429`  | `{ "success": false, "message": "Too many messages sent. Please try again later." }` |
+
+---
+
+### `GET /api/contact/admin` — List all contact messages
+
+**Auth:** `x-api-key` header required
+
+**Query Params**
+
+| Param   | Default | Description              |
+|---------|---------|--------------------------|
+| `page`  | 1       | Page number              |
+| `limit` | 20      | Items per page (max 100) |
+
+**Response** `200`
+```json
+{
+  "success": true,
+  "total": 12,
+  "page": 1,
+  "totalPages": 1,
+  "data": [
+    {
+      "_id": "65f...",
+      "name": "Jane Doe",
+      "email": "jane@example.com",
+      "reason": "Partnership Opportunity",
+      "message": "...",
+      "status": "new",
+      "createdAt": "2026-03-15T10:00:00.000Z",
+      "updatedAt": "2026-03-15T10:00:00.000Z"
+    }
+  ]
+}
+```
+
+---
+
+### `PATCH /api/contact/admin/:id` — Update message status
+
+**Auth:** `x-api-key` header required
+
+**Request Body**
+```json
+{
+  "status": "read"
+}
+```
+
+| Field    | Type   | Required | Values                        |
+|----------|--------|----------|-------------------------------|
+| `status` | string | ✅       | `new`, `read`, `responded`    |
+
+**Response** `200`
+```json
+{
+  "success": true,
+  "message": "Status updated successfully",
+  "data": { ... }
+}
+```
+
+---
+
+### `DELETE /api/contact/admin/:id` — Delete a message
+
+**Auth:** `x-api-key` header required
+
+**Response** `200`
+```json
+{
+  "success": true,
+  "message": "Message deleted successfully"
+}
+```
+
+---
+
+## Blog
 
 ### `GET /api/blog` — List published blogs (public)
 

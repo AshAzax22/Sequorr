@@ -51,6 +51,13 @@ Handles new signups and automated email notifications.
 
 - **`emailService.js`**: Uses **Nodemailer** to send high-performance, asynchronous welcome emails to new waitlist entries. It is designed to be "fire-and-forget" so that email delivery issues never block the user's signup request.
 
+### 5. Contact System
+Allows users to reach out to the Sequorr team with specific inquiries.
+
+- **`Contact.js` (Model)**: Stores user messages with category-based routing (reason).
+- **`contact.js` (Routes)**: Handles public submissions (with rate limiting) and provides full CRUD for admins to track and respond to inquiries.
+- **Team Notifications**: Automatically triggers an email alert to the Sequorr team upon every new submission via the `emailService`.
+
 ---
 
 ## 🔒 Middleware & Security
@@ -70,6 +77,7 @@ Handles new signups and automated email notifications.
 | `races.js` (Routes) | Defines endpoints for race search, single race details, and filter options. |
 | `blog.js` (Routes) | Handles CRUD for both public blog views and private admin management. |
 | `waitlist.js` (Routes) | Manages public signups and admin data export/deletion. |
+| `contact.js` (Routes) | Manages public inquiries and admin message tracking. |
 | `normalizeRace.js` | A utility that transforms the complex RunSignUp JSON response into a flat, UI-friendly object. |
 
 ---
