@@ -207,8 +207,10 @@ const BlogAdmin = () => {
                 {data.items.map(blog => (
                   <tr key={blog._id}>
                     <td className={styles.titleCol}>
-                      <span className={styles.blogTitle}>{blog.title}</span>
-                      <span className={styles.blogSlug}>/{blog.slug}</span>
+                      <div className={styles.titleCell}>
+                        <span className={styles.blogTitle}>{blog.title}</span>
+                        <span className={styles.blogSlug}>/{blog.slug}</span>
+                      </div>
                     </td>
                     <td>
                       <span className={`${styles.statusBadge} ${blog.published ? styles.published : styles.draft}`}>
