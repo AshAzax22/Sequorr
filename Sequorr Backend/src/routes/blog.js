@@ -32,8 +32,22 @@ router.get('/', async (req, res) => {
 
     // Tag filter
     if (req.query.tags) {
-      const tagList = req.query.tags.split(',').map((t) => t.trim().toLowerCase());
-      filter.tags = { $in: tagList };
+      let rawTags = req.query.tags;
+      // Handle stringified JSON array (e.g., '["cardio"]') or array form (tags[]=cardio)
+      if (typeof rawTags === 'string' && rawTags.startsWith('[')) {
+        try { rawTags = JSON.parse(rawTags); } catch (e) {}
+      }
+      if (!Array.isArray(rawTags)) {
+        rawTags = String(rawTags).split(',');
+      }
+      const tagList = rawTags
+        .map((t) => String(t).trim().toLowerCase())
+        .filter(Boolean); // removes empty strings
+
+      if (tagList.length > 0) {
+        // Change to $all if you want to require ALL selected tags rather than ANY
+        filter.tags = { $in: tagList };
+      }
     }
 
     // Text search on title
@@ -144,8 +158,21 @@ router.get('/admin', adminAuth, async (req, res) => {
 
     // Tag filter
     if (req.query.tags) {
-      const tagList = req.query.tags.split(',').map((t) => t.trim().toLowerCase());
-      filter.tags = { $in: tagList };
+      let rawTags = req.query.tags;
+      // Handle stringified JSON array (e.g., '["cardio"]') or array form (tags[]=cardio)
+      if (typeof rawTags === 'string' && rawTags.startsWith('[')) {
+        try { rawTags = JSON.parse(rawTags); } catch (e) {}
+      }
+      if (!Array.isArray(rawTags)) {
+        rawTags = String(rawTags).split(',');
+      }
+      const tagList = rawTags
+        .map((t) => String(t).trim().toLowerCase())
+        .filter(Boolean);
+
+      if (tagList.length > 0) {
+        filter.tags = { $in: tagList };
+      }
     }
 
     // Search

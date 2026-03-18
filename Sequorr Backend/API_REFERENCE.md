@@ -447,7 +447,7 @@ Set the key in your `.env` file as `ADMIN_API_KEY`.
 |----------|----------|-------------------------|--------------------------------------------|
 | `page`   | 1        | `?page=2`               | Page number                                |
 | `limit`  | 10       | `?limit=5`              | Items per page (max 50)                    |
-| `tags`   | —        | `?tags=cardio,nutrition` | Comma-separated tag filter (match any)    |
+| `tags`   | —        | `?tags=cardio,nutrition` | Tag filter (match any). Accepts comma-separated string, array (`?tags[]=`), or JSON array. |
 | `sort`   | `latest` | `?sort=most-read`       | `latest` / `oldest` / `most-read`          |
 | `search` | —        | `?search=fitness`       | Case-insensitive title search              |
 
@@ -547,7 +547,7 @@ Set the key in your `.env` file as `ADMIN_API_KEY`.
 | `page`      | 1        | `?page=2`             | Page number                          |
 | `limit`     | 20       | `?limit=10`           | Items per page (max 100)             |
 | `published` | —        | `?published=false`    | Filter by `true` or `false`          |
-| `tags`      | —        | `?tags=cardio`        | Comma-separated tag filter           |
+| `tags`      | —        | `?tags=cardio`        | Tag filter (match any). Accepts comma-separated string, array (`?tags[]=`), or JSON array. |
 | `sort`      | `latest` | `?sort=oldest`        | `latest` / `oldest` / `most-read`    |
 | `search`    | —        | `?search=habits`      | Case-insensitive title search        |
 
