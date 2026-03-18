@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const { Blog, ALLOWED_TAGS } = require('../models/Blog');
+const Tag = require('../models/Tag');
 const adminAuth = require('../middleware/adminAuth');
 const validateBlog = require('../middleware/validateBlog');
 
@@ -45,8 +46,16 @@ router.get('/', async (req, res) => {
         .filter(Boolean); // removes empty strings
 
       if (tagList.length > 0) {
-        // Change to $all if you want to require ALL selected tags rather than ANY
-        filter.tags = { $in: tagList };
+        // Find tags by slug to get their actual names stored in Blog.tags
+        const matchedTags = await Tag.find({ slug: { $in: tagList } });
+        const tagNames = matchedTags.map(t => t.name);
+
+        if (tagNames.length > 0) {
+          filter.tags = { $in: tagNames };
+        } else {
+          // If no matching tags exist, ensure query returns empty results
+          filter.tags = { $in: ['____NON_EXISTENT_TAG_FALLBACK____'] };
+        }
       }
     }
 
@@ -171,7 +180,16 @@ router.get('/admin', adminAuth, async (req, res) => {
         .filter(Boolean);
 
       if (tagList.length > 0) {
-        filter.tags = { $in: tagList };
+        // Find tags by slug to get their actual names stored in Blog.tags
+        const matchedTags = await Tag.find({ slug: { $in: tagList } });
+        const tagNames = matchedTags.map(t => t.name);
+
+        if (tagNames.length > 0) {
+          filter.tags = { $in: tagNames };
+        } else {
+          // If no matching tags exist, ensure query returns empty results
+          filter.tags = { $in: ['____NON_EXISTENT_TAG_FALLBACK____'] };
+        }
       }
     }
 
