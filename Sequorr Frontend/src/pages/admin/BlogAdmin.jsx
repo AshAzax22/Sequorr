@@ -171,7 +171,10 @@ const BlogAdmin = () => {
             placeholder="All Tags"
             options={[
               { value: '', label: 'All Tags' },
-              ...availableTags.map(t => ({ value: t, label: t }))
+              ...availableTags.map(t => ({ 
+                value: t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''), 
+                label: t 
+              }))
             ]} 
           />
 
