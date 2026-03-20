@@ -13,15 +13,26 @@ const validateWaitlist = (req, res, next) => {
   }
 
   // --- description ---
+  const validDescriptions = [
+    'Just Starting Out',
+    'Staying Consistent',
+    'Training seriously',
+    'Moving for fun'
+  ];
   if (!description || typeof description !== 'string' || !description.trim()) {
     errors.push('"What describes you best" is required');
+  } else if (!validDescriptions.includes(description.trim())) {
+    errors.push('Please select a valid option for "What describes you best"');
   } else if (description.trim().length > 200) {
     errors.push('Description must be 200 characters or fewer');
   }
 
   // --- usualMoveTime ---
+  const validMoveTimes = ['Morning', 'Noon', 'Evening'];
   if (!usualMoveTime || typeof usualMoveTime !== 'string' || !usualMoveTime.trim()) {
     errors.push('"When do you usually move" is required');
+  } else if (!validMoveTimes.includes(usualMoveTime.trim())) {
+    errors.push('Please select a valid option for "When do you usually move"');
   } else if (usualMoveTime.trim().length > 200) {
     errors.push('Move-time answer must be 200 characters or fewer');
   }
