@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Tooltip, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { MapPin, Search, Calendar, Globe, Navigation, List, Grid, ChevronDown, ChevronUp, PanelRightClose, PanelRightOpen, X, SlidersHorizontal, Settings2 } from 'lucide-react';
+import { MapPin, Search, Calendar, Globe, Navigation, List, Grid, ChevronDown, ChevronUp, PanelRightClose, PanelRightOpen, X, SlidersHorizontal, Settings2, LocateFixed } from 'lucide-react';
 import { getRaces, getRaceFilters } from '../../api/races';
 import { API_BASE } from '../../api/config';
 import CustomSelect from '../../components/CustomSelect';
@@ -73,13 +73,65 @@ const FindrrMap = () => {
       try {
         const f = await getRaceFilters();
         if (f.success) setAvailableFilters(f);
-        await fetchRacesList();
+
+        // Try geolocation on mount
+        if ("geolocation" in navigator) {
+          navigator.geolocation.getCurrentPosition(
+            async (position) => {
+              const { latitude, longitude } = position.coords;
+              setMapCenter([latitude, longitude]);
+              // Clear default city when using geolocation coordinates
+              setFilters(prev => ({ 
+                ...prev, 
+                city: '', 
+                lat: latitude, 
+                lng: longitude, 
+                radius: 50 
+              }));
+              await fetchRacesList({ lat: latitude, lng: longitude, radius: 50, city: '' });
+            },
+            async (error) => {
+              console.warn("Geolocation denied or failed, using default:", error.message);
+              await fetchRacesList(); // fallback to default filters (LA)
+            },
+            { timeout: 8000 }
+          );
+        } else {
+          await fetchRacesList();
+        }
       } catch (err) {
         setToast({ type: 'error', message: 'Failed to initialize Findrr' });
       }
     };
     fetchInitial();
   }, []);
+
+  const handleLocateMe = () => {
+    if (!("geolocation" in navigator)) {
+      setToast({ type: 'error', message: 'Geolocation not supported' });
+      return;
+    }
+
+    setLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setMapCenter([latitude, longitude]);
+        setFilters(prev => ({ 
+          ...prev, 
+          city: '', 
+          lat: latitude, 
+          lng: longitude, 
+          radius: 50 
+        }));
+        fetchRacesList({ lat: latitude, lng: longitude, radius: 50, city: '' });
+      },
+      (error) => {
+        setLoading(false);
+        setToast({ type: 'error', message: 'Location permission denied' });
+      }
+    );
+  };
 
   const fetchRacesList = async (customParams = {}) => {
     try {
@@ -122,7 +174,15 @@ const FindrrMap = () => {
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
-    setFilters(prev => ({ ...prev, [name]: value }));
+    setFilters(prev => {
+      const newFilters = { ...prev, [name]: value };
+      // If user starts typing a city/zip, clear coordinates
+      if (name === 'city' || name === 'zipcode') {
+        delete newFilters.lat;
+        delete newFilters.lng;
+      }
+      return newFilters;
+    });
   };
 
   const handleSearch = (e) => {
@@ -181,6 +241,25 @@ const FindrrMap = () => {
       <div className={styles.filterSection}>
         <h3 className={styles.sidebarTitle}>Location Filters</h3>
         <div className={styles.filtersWrapper}>
+          <div className={styles.inputGroup} style={{ marginBottom: '0.75rem' }}>
+            <MapPin size={18} className={styles.searchIcon} />
+            <input 
+              type="text" 
+              name="city"
+              placeholder="City name..." 
+              value={filters.city}
+              onChange={handleFilterChange}
+              className={styles.filterInput}
+            />
+            <button 
+              type="button" 
+              className={`${styles.locateBtn} ${filters.lat ? styles.locateBtnActive : ''}`}
+              onClick={handleLocateMe}
+              title="Use my location"
+            >
+              <LocateFixed size={18} />
+            </button>
+          </div>
           <div className={styles.filterRow}>
             <input 
               type="text" 
@@ -370,6 +449,13 @@ const FindrrMap = () => {
                   value={filters.city}
                   onChange={handleFilterChange}
                 />
+                <button 
+                  type="button" 
+                  className={`${styles.locateBtn} ${filters.lat ? styles.locateBtnActive : ''}`}
+                  onClick={handleLocateMe}
+                >
+                  <LocateFixed size={18} />
+                </button>
               </div>
               <button type="submit" className={styles.searchBtn}>Find</button>
             </form>

@@ -406,6 +406,39 @@
   text-decoration: none;
 }
 
+.locateBtn {
+  position: absolute;
+  right: 0.4rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--fg-muted);
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: 10px;
+  z-index: 2;
+}
+
+.locateBtn:hover {
+  color: var(--brand-primary);
+  background: rgba(46, 238, 52, 0.1);
+}
+
+.locateBtnActive {
+  color: var(--brand-primary);
+  filter: drop-shadow(0 0 5px var(--brand-primary));
+}
+
+.inputGroup input {
+  padding-right: 2.8rem !important;
+}
+
 /* Map Section */
 .mapSection {
   position: absolute;
