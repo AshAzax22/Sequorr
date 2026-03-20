@@ -334,6 +334,12 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.raceNameArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
 .raceName {
   font-size: 1rem;
   font-weight: 700;
@@ -347,6 +353,24 @@
   gap: 0.5rem;
   font-size: 0.75rem;
   color: var(--fg-muted);
+}
+
+.raceCardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.raceMetaGrid {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.tagsArea {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .raceCardFooter {
@@ -368,7 +392,7 @@
 
 .sidebarRegisterBtn {
   background: #fff;
-  color: #000;
+  color: #000 !important;
   font-size: 0.75rem;
   font-weight: 800;
   padding: 0.5rem 1rem;
@@ -413,27 +437,94 @@
   box-shadow: 0 0 15px var(--brand-primary), 0 0 30px rgba(46, 238, 52, 0.4);
 }
 
-/* Tooltips */
-:global(.leaflet-tooltip).markerTooltip {
-  background: rgba(10, 10, 10, 0.8) !important;
-  backdrop-filter: blur(12px) !important;
+/* Popups */
+:global(.leaflet-popup-content-wrapper) {
+  background: rgba(10, 10, 10, 0.85) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: 14px !important;
-  padding: 1rem !important;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+  border-radius: 20px !important;
+  padding: 0 !important;
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.6) !important;
+  overflow: hidden;
 }
 
-.tooltipTitle {
-  font-size: 0.9rem;
+:global(.leaflet-popup-content) {
+  margin: 0 !important;
+  width: auto !important;
+}
+
+:global(.leaflet-popup-tip) {
+  background: rgba(10, 10, 10, 0.85) !important;
+  backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.popupHorizontal {
+  display: flex;
+  gap: 1.25rem;
+  padding: 1.25rem;
+  align-items: stretch;
+}
+
+.popupLogoSide {
+  flex-shrink: 0;
+}
+
+.popupLogo {
+  width: 100px;
+  height: 100px;
+  border-radius: 14px;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.popupLogoPlaceholder {
+  width: 100px;
+  height: 100px;
+  border-radius: 14px;
+  background: rgba(46, 238, 52, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--brand-primary);
+  border: 1px solid rgba(46, 238, 52, 0.2);
+}
+
+.popupContentSide {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.popupName {
+  font-size: 1.1rem;
   font-weight: 800;
-  color: #fff !important;
-  margin-bottom: 0.5rem;
+  color: #fff;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.tooltipTag {
-  background: rgba(255, 255, 255, 0.05) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  color: var(--fg-secondary) !important;
+.popupDetails {
+  display: flex;
+  gap: 1.25rem;
+}
+
+.popupFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.25rem;
+}
+
+.popupTags {
+  display: flex;
+  gap: 0.5rem;
 }
 
 /* Header Refactor */
@@ -510,6 +601,31 @@
 .mobileFilterHeader h2 {
   font-size: 1.25rem;
   font-weight: 800;
+}
+
+.mobileFilterHeader button {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mobileFilterHeader button:hover {
+  background: rgba(46, 238, 52, 0.1);
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
+  transform: scale(1.05);
+}
+
+.mobileFilterHeader button:active {
+  transform: scale(0.95);
 }
 
 .mobileFilterBody {

@@ -478,7 +478,7 @@ const FindrrMap = () => {
                           </div>
                         ) : (
                           <a 
-                            href={race.url} 
+                            href={race.external_race_url || race.url} 
                             target="_blank" 
                             rel="noopener noreferrer" 
                             className={styles.sidebarRegisterBtn}
@@ -522,29 +522,68 @@ const FindrrMap = () => {
                       selectRace(race);
                     },
                     mouseover: (e) => {
-                      if (window.innerWidth >= 768) setSelectedRaceId(race.race_id);
+                      if (window.innerWidth >= 768) {
+                        e.target.openPopup();
+                        setSelectedRaceId(race.race_id);
+                      }
                     },
                   }}
                 >
-                  <Tooltip 
-                    className={styles.markerTooltip} 
-                    direction="top" 
-                    offset={[0, -10]} 
-                    opacity={1}
+                  <Popup 
+                    className={styles.markerPopup}
+                    closeButton={false}
+                    minWidth={440}
                   >
-                    <div className={styles.tooltipContent}>
-                      <h6 className={styles.tooltipTitle}>{race.name}</h6>
-                      <div className={styles.tooltipMeta}>
-                        <span>{race.next_date}</span>
-                        <span>•</span>
-                        <span>{race.address.city}</span>
+                    <div className={styles.popupHorizontal}>
+                      <div className={styles.popupLogoSide}>
+                        {race.logo_url ? (
+                          <img src={race.logo_url} alt="" className={styles.popupLogo} />
+                        ) : (
+                          <div className={styles.popupLogoPlaceholder}>
+                            <MapPin size={24} />
+                          </div>
+                        )}
                       </div>
-                      <div className={styles.tooltipStats}>
-                        <span className={styles.tooltipTag}>{race.events[0]?.distance}</span>
-                        <span className={styles.tooltipTag}>{race.events[0]?.event_type}</span>
+                      
+                      <div className={styles.popupContentSide}>
+                        <div className={styles.popupHeader}>
+                          <h4 className={styles.popupName}>{race.name}</h4>
+                          <div className={styles.metaItem}>
+                            <MapPin size={12} />
+                            <span>{race.address.city}, {race.address.state}</span>
+                          </div>
+                        </div>
+                        
+                        <div className={styles.popupDetails}>
+                          <div className={styles.metaItem}>
+                            <Calendar size={12} />
+                            <span>{race.next_date || 'TBD'}</span>
+                          </div>
+                          <div className={styles.metaItem}>
+                            <Navigation size={12} />
+                            <span>{race.events[0]?.distance || 'N/A'}</span>
+                          </div>
+                        </div>
+                        
+                        <div className={styles.popupFooter}>
+                          <div className={styles.popupTags}>
+                            {race.events.slice(0, 2).map(ev => (
+                              <span key={ev.event_id} className={styles.distanceTag}>{ev.distance}</span>
+                            ))}
+                          </div>
+                          <a 
+                            href={race.external_race_url || race.url} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className={styles.sidebarRegisterBtn}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            Register
+                          </a>
+                        </div>
                       </div>
                     </div>
-                  </Tooltip>
+                  </Popup>
                 </Marker>
               );
             })}
