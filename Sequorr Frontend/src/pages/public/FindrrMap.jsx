@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Tooltip, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { MapPin, Search, Calendar, Globe, Navigation, List, Grid, ChevronDown, ChevronUp } from 'lucide-react';
+import { MapPin, Search, Calendar, Globe, Navigation, List, Grid, ChevronDown, ChevronUp, PanelRightClose, PanelRightOpen, X, SlidersHorizontal, Settings2 } from 'lucide-react';
 import { getRaces, getRaceFilters } from '../../api/races';
 import { API_BASE } from '../../api/config';
 import CustomSelect from '../../components/CustomSelect';
@@ -64,6 +64,7 @@ const FindrrMap = () => {
   const [toast, setToast] = useState(null);
   const [viewMode, setViewMode] = useState('split'); // split, map, list (for mobile)
   const [showEventFilters, setShowEventFilters] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   useEffect(() => {
     const fetchInitial = async () => {
@@ -172,6 +173,13 @@ const FindrrMap = () => {
     <div className={styles.page}>
       {toast && <Toast {...toast} onClose={() => setToast(null)} />}
       
+      <button 
+        className={styles.sidebarToggle} 
+        onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+      >
+        {isSidebarCollapsed ? <Settings2 size={20} /> : <X size={20} />}
+      </button>
+
       <header className={styles.header}>
         <div className={styles.logo}>
           <span className={styles.brand}>Sequorr</span>
@@ -207,8 +215,9 @@ const FindrrMap = () => {
         </div>
       </header>
 
-      <main className={`${styles.main} ${styles[viewMode]}`}>
-        <aside className={styles.sidebar}>
+      <main className={`${styles.main} ${styles[viewMode]} ${isSidebarCollapsed ? styles.collapsed : ''}`}>
+
+        <aside className={`${styles.sidebar} ${isSidebarCollapsed ? styles.sidebarHidden : ''}`}>
           <div className={styles.filterSection}>
             <h3 className={styles.sidebarTitle}>Location Filters</h3>
             <div className={styles.filtersWrapper}>
