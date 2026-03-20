@@ -66,6 +66,8 @@ const FindrrMap = () => {
   const [showEventFilters, setShowEventFilters] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+
   useEffect(() => {
     const fetchInitial = async () => {
       try {
@@ -124,8 +126,12 @@ const FindrrMap = () => {
   };
 
   const handleSearch = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     fetchRacesList();
+    if (window.innerWidth < 768) {
+      // Auto switch to split view on mobile search to show results
+      if (viewMode === 'map') setViewMode('split');
+    }
   };
 
   const selectRace = async (race) => {
@@ -166,13 +172,144 @@ const FindrrMap = () => {
       }
     }
     
-    if (window.innerWidth < 768) setViewMode('map');
+    // On mobile, if we select from list, switch to split to show map
+    if (window.innerWidth < 768 && viewMode === 'list') setViewMode('split');
   };
+
+  const FilterPanel = () => (
+    <>
+      <div className={styles.filterSection}>
+        <h3 className={styles.sidebarTitle}>Location Filters</h3>
+        <div className={styles.filtersWrapper}>
+          <div className={styles.filterRow}>
+            <input 
+              type="text" 
+              name="state"
+              placeholder="State (e.g. CA)" 
+              value={filters.state}
+              onChange={handleFilterChange}
+              className={styles.filterInput}
+            />
+            <CustomSelect 
+              name="country"
+              placeholder="Country" 
+              value={filters.country}
+              onChange={handleFilterChange}
+              className={styles.filterInput}
+              options={[
+                { value: '', label: 'Any Country' },
+                ...(availableFilters?.available_countries || [])
+              ]}
+            />
+          </div>
+          <div className={styles.filterRow}>
+            <input 
+              type="text" 
+              name="zipcode"
+              placeholder="Zipcode" 
+              value={filters.zipcode}
+              onChange={handleFilterChange}
+              className={styles.filterInput}
+            />
+            <input 
+              type="number" 
+              name="radius"
+              placeholder="Radius (mi)" 
+              value={filters.radius}
+              onChange={handleFilterChange}
+              className={styles.filterInput}
+              min="1"
+              max={availableFilters?.max_radius || 100}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className={styles.filterSection}>
+        <div 
+          className={styles.sidebarTitleCollapsible} 
+          onClick={() => setShowEventFilters(!showEventFilters)}
+        >
+          <h3>Event Details</h3>
+          {showEventFilters ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+        </div>
+        {(showEventFilters || isMobileFilterOpen) && (
+          <div className={styles.filtersWrapper}>
+            <div className={styles.filterRow}>
+              <div className={styles.dateInputWrapper}>
+                <span className={styles.dateLabel}>From</span>
+                <input 
+                  type="date" 
+                  name="start_date"
+                  value={filters.start_date}
+                  onChange={handleFilterChange}
+                  className={styles.filterInput}
+                />
+              </div>
+              <div className={styles.dateInputWrapper}>
+                <span className={styles.dateLabel}>To</span>
+                <input 
+                  type="date" 
+                  name="end_date"
+                  value={filters.end_date}
+                  onChange={handleFilterChange}
+                  className={styles.filterInput}
+                />
+              </div>
+            </div>
+            <CustomSelect 
+              name="event_type"
+              placeholder="All Types"
+              value={filters.event_type}
+              onChange={handleFilterChange}
+              options={[
+                { value: '', label: 'All Types' },
+                ...(availableFilters?.event_types.map(t => ({ value: t, label: t.charAt(0).toUpperCase() + t.slice(1) })) || [])
+              ]}
+            />
+            <div className={styles.filterRow}>
+              <CustomSelect 
+                name="min_distance"
+                placeholder="Min Dist"
+                value={filters.min_distance}
+                onChange={handleFilterChange}
+                options={[
+                  { value: '', label: 'Min Distance' },
+                  ...(availableFilters?.distance_presets.map(p => ({ value: p.miles, label: p.label })) || [])
+                ]}
+              />
+              <CustomSelect 
+                name="max_distance"
+                placeholder="Max Dist"
+                value={filters.max_distance}
+                onChange={handleFilterChange}
+                options={[
+                  { value: '', label: 'Max Distance' },
+                  ...(availableFilters?.distance_presets.map(p => ({ value: p.miles, label: p.label })) || [])
+                ]}
+              />
+            </div>
+            <CustomSelect 
+              name="sort"
+              value={filters.sort}
+              onChange={handleFilterChange}
+              options={[
+                { value: 'date', label: 'By Date' },
+                { value: 'name', label: 'By Name' },
+                { value: 'distance', label: 'By Distance' }
+              ]}
+            />
+          </div>
+        )}
+      </div>
+    </>
+  );
 
   return (
     <div className={styles.page}>
       {toast && <Toast {...toast} onClose={() => setToast(null)} />}
       
+      {/* Desktop Sidebar Toggle */}
       <button 
         className={styles.sidebarToggle} 
         onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
@@ -180,166 +317,119 @@ const FindrrMap = () => {
         {isSidebarCollapsed ? <Settings2 size={20} /> : <X size={20} />}
       </button>
 
-      <header className={styles.header}>
-        <div className={styles.logo}>
-          <span className={styles.brand}>Sequorr</span>
-          <span className={styles.findr}>Findrr</span>
+      {/* Mobile Filter Modal */}
+      {isMobileFilterOpen && (
+        <div className={styles.mobileFilterOverlay}>
+          <div className={styles.mobileFilterContent}>
+            <div className={styles.mobileFilterHeader}>
+              <h2>Filters</h2>
+              <button onClick={() => setIsMobileFilterOpen(false)}><X size={24} /></button>
+            </div>
+            <div className={styles.mobileFilterBody}>
+              <FilterPanel />
+            </div>
+            <div className={styles.mobileFilterFooter}>
+              <button 
+                className={styles.applyBtn} 
+                onClick={() => {
+                  handleSearch();
+                  setIsMobileFilterOpen(false);
+                }}
+              >
+                Apply Filters
+              </button>
+            </div>
+          </div>
         </div>
-        <form className={styles.searchBar} onSubmit={handleSearch}>
-          <div className={styles.inputGroup}>
-            <Search size={18} className={styles.searchIcon} />
-            <input 
-              type="text" 
-              name="search"
-              placeholder="Search by name..." 
-              value={filters.search}
-              onChange={handleFilterChange}
-            />
+      )}
+
+      <header className={styles.header}>
+        <div className={styles.headerTop}>
+          <div className={styles.logo}>
+            <span className={styles.brand}>Sequorr</span>
+            <span className={styles.findr}>Findrr</span>
           </div>
-          <div className={styles.inputGroup}>
-            <MapPin size={18} className={styles.searchIcon} />
-            <input 
-              type="text" 
-              name="city"
-              placeholder="City (e.g. Los Angeles)..." 
-              value={filters.city}
-              onChange={handleFilterChange}
-            />
+          <div className={styles.desktopSearchOnly}>
+            <form className={styles.searchBar} onSubmit={handleSearch}>
+              <div className={styles.inputGroup}>
+                <Search size={18} className={styles.searchIcon} />
+                <input 
+                  type="text" 
+                  name="search"
+                  placeholder="Race name..." 
+                  value={filters.search}
+                  onChange={handleFilterChange}
+                />
+              </div>
+              <div className={styles.inputGroup}>
+                <MapPin size={18} className={styles.searchIcon} />
+                <input 
+                  type="text" 
+                  name="city"
+                  placeholder="City..." 
+                  value={filters.city}
+                  onChange={handleFilterChange}
+                />
+              </div>
+              <button type="submit" className={styles.searchBtn}>Find</button>
+            </form>
           </div>
-          <button type="submit" className={styles.searchBtn}>Find Races</button>
-        </form>
+        </div>
+
+        <div className={styles.mobileSearchSticky}>
+          <form className={styles.mobileSearchForm} onSubmit={handleSearch}>
+            <div className={styles.mobileInputRow}>
+              <div className={styles.inputGroup}>
+                <Search size={18} className={styles.searchIcon} />
+                <input 
+                  type="text" 
+                  name="search"
+                  placeholder="Search races..." 
+                  value={filters.search}
+                  onChange={handleFilterChange}
+                />
+              </div>
+              <button type="submit" className={styles.mobileSearchBtn}><Search size={18}/></button>
+            </div>
+          </form>
+        </div>
+
         <div className={styles.mobileNav}>
-          <button onClick={() => setViewMode('list')} className={viewMode === 'list' ? styles.active : ''}><List size={20}/></button>
-          <button onClick={() => setViewMode('split')} className={viewMode === 'split' ? styles.active : ''}><Grid size={20}/></button>
-          <button onClick={() => setViewMode('map')} className={viewMode === 'map' ? styles.active : ''}><Navigation size={20}/></button>
+          <button onClick={() => setViewMode('list')} className={viewMode === 'list' ? styles.active : ''}>
+            <List size={20}/>
+            <span>List</span>
+          </button>
+          <button onClick={() => setViewMode('split')} className={viewMode === 'split' ? styles.active : ''}>
+            <Grid size={20}/>
+            <span>Split</span>
+          </button>
+          <button onClick={() => setViewMode('map')} className={viewMode === 'map' ? styles.active : ''}>
+            <Navigation size={20}/>
+            <span>Map</span>
+          </button>
         </div>
       </header>
 
       <main className={`${styles.main} ${styles[viewMode]} ${isSidebarCollapsed ? styles.collapsed : ''}`}>
 
         <aside className={`${styles.sidebar} ${isSidebarCollapsed ? styles.sidebarHidden : ''}`}>
-          <div className={styles.filterSection}>
-            <h3 className={styles.sidebarTitle}>Location Filters</h3>
-            <div className={styles.filtersWrapper}>
-              <div className={styles.filterRow}>
-                <input 
-                  type="text" 
-                  name="state"
-                  placeholder="State (e.g. CA)" 
-                  value={filters.state}
-                  onChange={handleFilterChange}
-                  className={styles.filterInput}
-                />
-                <CustomSelect 
-                  name="country"
-                  placeholder="Country" 
-                  value={filters.country}
-                  onChange={handleFilterChange}
-                  className={styles.filterInput}
-                  options={[
-                    { value: '', label: 'Any Country' },
-                    ...(availableFilters?.available_countries || [])
-                  ]}
-                />
-              </div>
-              <div className={styles.filterRow}>
-                <input 
-                  type="text" 
-                  name="zipcode"
-                  placeholder="Zipcode" 
-                  value={filters.zipcode}
-                  onChange={handleFilterChange}
-                  className={styles.filterInput}
-                />
-                <input 
-                  type="number" 
-                  name="radius"
-                  placeholder="Radius (mi)" 
-                  value={filters.radius}
-                  onChange={handleFilterChange}
-                  className={styles.filterInput}
-                  min="1"
-                  max={availableFilters?.max_radius || 100}
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className={styles.filterSection}>
-            <div 
-              className={styles.sidebarTitleCollapsible} 
-              onClick={() => setShowEventFilters(!showEventFilters)}
-            >
-              <h3>Event Details</h3>
-              {showEventFilters ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-            </div>
-            {showEventFilters && (
-              <div className={styles.filtersWrapper}>
-                <div className={styles.filterRow}>
-                  <input 
-                    type="date" 
-                    name="start_date"
-                    placeholder="Start Date" 
-                    value={filters.start_date}
-                    onChange={handleFilterChange}
-                    className={styles.filterInput}
-                  />
-                  <input 
-                    type="date" 
-                    name="end_date"
-                    placeholder="End Date" 
-                    value={filters.end_date}
-                    onChange={handleFilterChange}
-                    className={styles.filterInput}
-                  />
-                </div>
-                <CustomSelect 
-                  name="event_type"
-                  placeholder="All Types"
-                  value={filters.event_type}
-                  onChange={handleFilterChange}
-                  options={[
-                    { value: '', label: 'All Types' },
-                    ...(availableFilters?.event_types.map(t => ({ value: t, label: t.charAt(0).toUpperCase() + t.slice(1) })) || [])
-                  ]}
-                />
-                <CustomSelect 
-                  name="min_distance"
-                  placeholder="Min Distance"
-                  value={filters.min_distance}
-                  onChange={handleFilterChange}
-                  options={[
-                    { value: '', label: 'Min Distance' },
-                    ...(availableFilters?.distance_presets.map(p => ({ value: p.miles, label: p.label })) || [])
-                  ]}
-                />
-                <CustomSelect 
-                  name="max_distance"
-                  placeholder="Max Distance"
-                  value={filters.max_distance}
-                  onChange={handleFilterChange}
-                  options={[
-                    { value: '', label: 'Max Distance' },
-                    ...(availableFilters?.distance_presets.map(p => ({ value: p.miles, label: p.label })) || [])
-                  ]}
-                />
-                <CustomSelect 
-                  name="sort"
-                  value={filters.sort}
-                  onChange={handleFilterChange}
-                  options={[
-                    { value: 'date', label: 'By Date' },
-                    { value: 'name', label: 'By Name' },
-                    { value: 'distance', label: 'By Distance' }
-                  ]}
-                />
-              </div>
-            )}
+          <div className={styles.desktopFiltersOnly}>
+            <FilterPanel />
           </div>
 
           <div className={styles.resultsArea}>
             <div className={styles.resultsCount}>
-              <span>{loading ? 'Searching...' : `${races.length} races found`}</span>
+              <div className={styles.sheetHandle} />
+              <div className={styles.resultsHeaderRow}>
+                <span>{loading ? 'Searching...' : `${races.length} races found`}</span>
+                <button 
+                  className={styles.mobileFilterTrigger}
+                  onClick={() => setIsMobileFilterOpen(true)}
+                >
+                  <SlidersHorizontal size={18} />
+                  <span>Filters</span>
+                </button>
+              </div>
               {loading && <div className={styles.progressBar} />}
             </div>
             
@@ -376,28 +466,28 @@ const FindrrMap = () => {
                         </div>
                       </div>
                       
-                        <div className={styles.raceCardFooter}>
-                          <div className={styles.tagsArea}>
-                            {race.events.slice(0, 3).map(ev => (
-                              <span key={ev.event_id} className={styles.distanceTag}>{ev.distance}</span>
-                            ))}
-                          </div>
-                          {geocodingIds.has(race.race_id) ? (
-                            <div className={styles.cardLoader}>
-                              <Spinner size="xs" /> <span>Geocoding...</span>
-                            </div>
-                          ) : (
-                            <a 
-                              href={race.url} 
-                              target="_blank" 
-                              rel="noopener noreferrer" 
-                              className={styles.sidebarRegisterBtn}
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              Register
-                            </a>
-                          )}
+                      <div className={styles.raceCardFooter}>
+                        <div className={styles.tagsArea}>
+                          {race.events.slice(0, 3).map(ev => (
+                            <span key={ev.event_id} className={styles.distanceTag}>{ev.distance}</span>
+                          ))}
                         </div>
+                        {geocodingIds.has(race.race_id) ? (
+                          <div className={styles.cardLoader}>
+                            <Spinner size="xs" /> <span>Geocoding...</span>
+                          </div>
+                        ) : (
+                          <a 
+                            href={race.url} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className={styles.sidebarRegisterBtn}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            Register
+                          </a>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))
@@ -413,13 +503,11 @@ const FindrrMap = () => {
             className={styles.map}
             zoomControl={false}
           >
-            {/* Dark Tiles Provider */}
             <TileLayer
               url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
             />
             <MapRefresher center={mapCenter} zoom={selectedRaceId ? 14 : 11} />
-            {/* MapEvents removed */}
             
             {races.map(race => {
               const coords = race.coordinates;
@@ -430,8 +518,11 @@ const FindrrMap = () => {
                   position={[coords.lat, coords.lng]}
                   icon={neonMarkerIcon}
                   eventHandlers={{
+                    click: (e) => {
+                      selectRace(race);
+                    },
                     mouseover: (e) => {
-                      setSelectedRaceId(race.race_id);
+                      if (window.innerWidth >= 768) setSelectedRaceId(race.race_id);
                     },
                   }}
                 >
