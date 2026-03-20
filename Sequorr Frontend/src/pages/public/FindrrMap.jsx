@@ -532,7 +532,7 @@ const FindrrMap = () => {
                   <Popup 
                     className={styles.markerPopup}
                     closeButton={false}
-                    minWidth={440}
+                    minWidth={300}
                   >
                     <div className={styles.popupHorizontal}>
                       <div className={styles.popupLogoSide}>
