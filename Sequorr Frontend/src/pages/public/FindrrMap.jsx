@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Tooltip, useMap, useMapEvents } from 'react-leaflet';
+import { useState, useEffect } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { MapPin, Search, Calendar, Globe, Navigation, List, Grid, ChevronDown, ChevronUp, PanelRightClose, PanelRightOpen, X, SlidersHorizontal, Settings2, LocateFixed } from 'lucide-react';
+import { MapPin, Search, Calendar, Navigation, List, Grid, ChevronDown, ChevronUp, X, SlidersHorizontal, Settings2, LocateFixed } from 'lucide-react';
 import { getRaces, getRaceFilters } from '../../api/races';
-import { API_BASE } from '../../api/config';
 import CustomSelect from '../../components/CustomSelect';
 import Spinner from '../../components/Spinner';
 import Toast from '../../components/Toast';
